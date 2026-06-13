@@ -2,15 +2,12 @@ package com.example.myapplication
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.token_storage.TokenStorage
-import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.example.myapplication.app_event_notification.CoreNotification
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import com.arkivanov.mvikotlin.core.instancekeeper.getStore
 
 
-class MyViewModel(private val tokenStorage: TokenStorage,  val textComponent: TextComponent): ViewModel() {
+class MyViewModel(private val coreNotification: CoreNotification,  val textComponent: TextComponent): ViewModel() {
 
 
 
@@ -20,7 +17,7 @@ class MyViewModel(private val tokenStorage: TokenStorage,  val textComponent: Te
     init {
         println("$this")
         viewModelScope.launch {
-            tokenStorage.storageFlow.collect {
+            coreNotification.storageFlow.collect {
                 if (it.iosMenuEvent) {
                     menuClick()
                 }
@@ -29,15 +26,17 @@ class MyViewModel(private val tokenStorage: TokenStorage,  val textComponent: Te
     }
 
     fun menuClick(){
-        textComponent.changeText("text")
-        tokenStorage.sendIosMenuEvent(false)
-//        _state.value = "text"
-//        tokenStorage.sendIosMenuEvent(false)
+        textComponent.changeText("Текст изменен")
+        coreNotification.sendIosMenuEvent(false)
     }
 
     fun reset(){
-        textComponent.changeText("new text")
-        tokenStorage.sendIosMenuEvent(false)
+        textComponent.changeText("текст сброшен")
+        coreNotification.sendIosMenuEvent(false)
+    }
+    fun resetWhenScreenResumes(){
+        textComponent.changeText("экран resumes")
+        coreNotification.sendIosMenuEvent(false)
     }
 
     override fun onCleared() {

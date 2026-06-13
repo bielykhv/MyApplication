@@ -223,12 +223,8 @@ struct TabContentView: View {
                     ToolbarItem(placement: .topBarTrailing) {
                         if isMenu {
                             Menu {
-                                Button("Настройки") {
-                                    IosDeepLikHelper().setDeepLink(isEvent: true)
-                                }
-
-                                Button("Выйти") {
-                                    IosDeepLikHelper().setDeepLink(isEvent: true)
+                                Button("Изменить текст") {
+                                    IosEventHandler().sendNotification(isEvent: true)
                                 }
                             } label: {
                                 Image(systemName: "ellipsis")

@@ -2,7 +2,7 @@ package com.example.myapplication
 
 import androidx.compose.ui.uikit.OnFocusBehavior
 import androidx.compose.ui.window.ComposeUIViewController
-import com.example.myapplication.token_storage.TokenStorage
+import com.example.myapplication.app_event_notification.CoreNotification
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import platform.UIKit.UIViewController
@@ -46,9 +46,9 @@ fun ScreenViewController(
         onActivate = onActivate,
     )
 }
-class IosDeepLikHelper : KoinComponent {
-    private val tokenStorage: TokenStorage by inject()
-    fun setDeepLink(isEvent: Boolean){
-        tokenStorage.sendIosMenuEvent(isEvent)
+class IosEventHandler : KoinComponent {
+    private val coreNotification: CoreNotification by inject()
+    fun sendNotification(isEvent: Boolean){
+        coreNotification.sendIosMenuEvent(isEvent)
     }
 }

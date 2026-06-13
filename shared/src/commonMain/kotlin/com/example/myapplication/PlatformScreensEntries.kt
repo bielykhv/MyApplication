@@ -5,7 +5,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.EntryProviderScope
-import org.koin.compose.viewmodel.koinViewModel
+import com.example.myapplication.screens.HomeDetailsScreen
+import com.example.myapplication.screens.HomeScreen
+import com.example.myapplication.screens.ProfileDetailsNextScreen
+import com.example.myapplication.screens.ProfileDetailsNextTextScreen
+import com.example.myapplication.screens.ProfileDetailsScreen
+import com.example.myapplication.screens.ProfileScreen
+import com.example.myapplication.screens.SearchDetailsScreen
+import com.example.myapplication.screens.SearchScreen
 
 fun EntryProviderScope<AppRoute>.screens(
     navigator: Navigator,

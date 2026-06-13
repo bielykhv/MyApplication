@@ -1,10 +1,9 @@
-package com.example.myapplication.token_storage
+package com.example.myapplication.app_event_notification
 
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
 
-interface TokenStorage {
-    val storageFlow: SharedFlow<TokenStoreData>
+interface CoreNotification{
+    val storageFlow: SharedFlow<NotificationData>
 
 
     fun sendIosMenuEvent(isEvent: Boolean)
@@ -13,6 +12,6 @@ interface TokenStorage {
 }
 
 
-data class TokenStoreData(
+data class NotificationData(
     val iosMenuEvent: Boolean
 )
