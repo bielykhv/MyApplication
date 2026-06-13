@@ -41,11 +41,6 @@ fun HomeDetailsScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.align(Alignment.Center)) {
             Text("Home details screen")
-            Button(
-                onClick = openDetails
-            ) {
-                Text("open next")
-            }
         }
     }
 }
@@ -73,12 +68,7 @@ fun SearchDetailsScreen(
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.align(Alignment.Center)) {
-            Text("search details creen")
-            Button(
-                onClick = openDetails
-            ) {
-                Text("Open next")
-            }
+            Text("search details screen")
         }
     }
 }
@@ -198,7 +188,7 @@ fun ProfileDetailsNextTextScreen(
             Button(
                 onClick = openDetails
             ) {
-                Text("Open next")
+                Text("Open Search details screen")
             }
             Button(
                 onClick = { viewModel.reset() }
