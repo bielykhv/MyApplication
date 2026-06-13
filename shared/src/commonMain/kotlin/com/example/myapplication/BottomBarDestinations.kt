@@ -1,7 +1,5 @@
 package com.example.myapplication
 
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import myapplication.shared.generated.resources.Res
 import myapplication.shared.generated.resources.compose_multiplatform
 import org.jetbrains.compose.resources.DrawableResource

@@ -109,7 +109,6 @@ class Navigator(
             is Home, is HomeDetails -> Home
             is Profile, is ProfileDetails, is ProfileDetailsNext, is ProfileDetailsNextText -> Profile
             is Search, is SearchDetails -> Search
-            else -> error("Unknown route $this")
         }
     }
 

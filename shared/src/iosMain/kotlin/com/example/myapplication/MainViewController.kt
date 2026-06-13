@@ -46,6 +46,7 @@ fun ScreenViewController(
         onActivate = onActivate,
     )
 }
+@Suppress("unused") // Called from Swift
 class IosEventHandler : KoinComponent {
     private val coreNotification: CoreNotification by inject()
     fun sendNotification(isEvent: Boolean){
