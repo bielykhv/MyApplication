@@ -112,7 +112,7 @@ internal fun NavHost(
     val content = @Composable {
         NavDisplay(
             entries = navState.toDecoratedEntries(entryProvider),
-            onBack = navigator::goBack,
+            onBack = { navigator.goBack() },
         )
     }
     if (isNative){

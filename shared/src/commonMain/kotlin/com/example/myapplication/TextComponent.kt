@@ -7,6 +7,8 @@ interface TextComponent {
     val state: StateFlow<ProfileTextStore.State>
 
     fun changeText(text: String)
+
+    fun showDialog(isShow: Boolean)
 //    fun interface Factory {
 //        operator fun invoke(): TextComponent
 //    }

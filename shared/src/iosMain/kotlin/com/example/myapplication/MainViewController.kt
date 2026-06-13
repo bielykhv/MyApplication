@@ -52,4 +52,7 @@ class IosEventHandler : KoinComponent {
     fun sendNotification(isEvent: Boolean){
         coreNotification.sendIosMenuEvent(isEvent)
     }
+    fun showDialog(isEvent: Boolean){
+        coreNotification.showExitDialogFromIos(isEvent)
+    }
 }

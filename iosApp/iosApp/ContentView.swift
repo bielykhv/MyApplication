@@ -6,7 +6,6 @@ import UIKit
 
 struct ComposeView: UIViewControllerRepresentable {
     let topLevelRoute: TopLevelRoute
-
     func makeUIViewController(context: Context) -> UIViewController {
         MainViewControllerKt.MainViewController(topLevelRoute: topLevelRoute)
     }
@@ -55,26 +54,21 @@ class TabNavigationCoordinator {
 @available(iOS 26.0, *)
 @Observable
 class AppNavigationCoordinator {
-
     var selectedTabIndex: Int = 1
 
     let tabCoordinators: [Int: TabNavigationCoordinator] = [
-        1: TabNavigationCoordinator(),  // Home
-        2: TabNavigationCoordinator(),  // Search
-        3: TabNavigationCoordinator(),  // Profile
+        1: TabNavigationCoordinator(),
+        2: TabNavigationCoordinator(),
+        3: TabNavigationCoordinator(),
     ]
 
     func tabIndex(for route: AppRoute) -> Int {
         switch route {
-        case is Home,
-            is HomeDetails:
+        case is Home, is HomeDetails:
             return 1
-        case is Search,
-            is SearchDetails:
+        case is Search, is SearchDetails:
             return 2
-        case is Profile,
-            is ProfileDetails,
-            is ProfileDetailsNext:
+        case is Profile, is ProfileDetails, is ProfileDetailsNext:
             return 3
         default:
             assertionFailure("Unhandled route: \(route)")
@@ -82,9 +76,6 @@ class AppNavigationCoordinator {
         }
     }
 
-    /// Открывает любой роут — переключает вкладку и обновляет стек.
-    /// Порядок операций важен: стек обновляется до смены selectedTabIndex,
-    /// чтобы isTabBarHidden в TabContentView пересчитался без мигания.
     func open(route: AppRoute) {
         let targetTab = tabIndex(for: route)
 
@@ -106,59 +97,62 @@ class AppNavigationCoordinator {
     }
 }
 
-// MARK: - UIViewControllerRepresentable Bridges
+// MARK: - Back Interceptor (только свайп)
 
-/// Рутовый экран вкладки — KMP экран верхнего уровня
-@available(iOS 26.0, *)
-struct NativeNavComposeView: UIViewControllerRepresentable {
-    let topLevelRoute: TopLevelRoute
-    let coordinator: TabNavigationCoordinator
-    let appCoordinator: AppNavigationCoordinator
-
-    func makeUIViewController(context: Context) -> UIViewController {
-        MainViewControllerKt.MainViewController(
-            topLevelRoute: topLevelRoute,
-            onNavigate: { route in
-                coordinator.push(route)
-            },
-            onActivate: { route in
-                appCoordinator.open(route: route)
-            }
-        )
+private extension UIView {
+    func findNavigationController() -> UINavigationController? {
+        sequence(first: self as UIResponder, next: \.next)
+            .compactMap { $0 as? UIViewController }
+            .compactMap { $0.navigationController }
+            .first
     }
-
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
 }
 
-/// Экран внутри стека — любой detail экран
-@available(iOS 26.0, *)
-struct DetailComposeView: UIViewControllerRepresentable {
-    let route: AppRoute
-    let coordinator: TabNavigationCoordinator
-    let appCoordinator: AppNavigationCoordinator
+private struct BackInterceptor: UIViewRepresentable {
+    let onBack: () -> Void
 
-    func makeUIViewController(context: Context) -> UIViewController {
-        MainViewControllerKt.ScreenViewController(
-            route: route,
-            onNavigate: { route in
-                coordinator.push(route)
-            },
-            onGoBack: {
-                coordinator.pop()
-            },
-            onSet: { route in
-                appCoordinator.open(route: route)
-            },
-            onActivate: { route in
-                appCoordinator.open(route: route)
-            }
-        )
+    func makeCoordinator() -> Coordinator {
+        Coordinator(onBack: onBack)
     }
 
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView()
+        view.backgroundColor = .clear
+        return view
+    }
+
+    func updateUIView(_ uiView: UIView, context: Context) {
+        context.coordinator.onBack = onBack
+        DispatchQueue.main.async {
+            if let nav = uiView.findNavigationController() {
+                context.coordinator.attach(to: nav)
+            }
+        }
+    }
+
+    final class Coordinator: NSObject, UIGestureRecognizerDelegate {
+        var onBack: () -> Void
+        weak var nav: UINavigationController?
+
+        init(onBack: @escaping () -> Void) {
+            self.onBack = onBack
+        }
+
+        func attach(to nav: UINavigationController) {
+            guard self.nav == nil else { return }
+            self.nav = nav
+            nav.interactivePopGestureRecognizer?.delegate = self
+        }
+
+        // Свайп не начинается — вместо этого вызываем onBack
+        func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+            onBack()
+            return false
+        }
+    }
 }
 
-// MARK: - Tab Bar Visibility
+// MARK: - Tab Bar / Menu Helpers
 
 func shouldHideTabBar(for route: AppRoute) -> Bool {
     switch route {
@@ -169,7 +163,8 @@ func shouldHideTabBar(for route: AppRoute) -> Bool {
     default: return false
     }
 }
-func shouMenu(for route: AppRoute) -> Bool {
+
+func shouldShowMenu(for route: AppRoute) -> Bool {
     switch route {
     case is ProfileDetailsNextText: return true
     case is ProfileDetailsNext: return true
@@ -177,11 +172,66 @@ func shouMenu(for route: AppRoute) -> Bool {
     }
 }
 
-// MARK: - Views
+func shouldInterceptBack(for route: AppRoute) -> Bool {
+    route is ProfileDetailsNextText
+}
 
-/// Одна вкладка с NavigationStack.
-/// isTabBarHidden читается из coordinator.path.last синхронно —
-/// @Observable гарантирует пересчёт при каждом изменении стека.
+// MARK: - UIViewControllerRepresentable Bridges
+
+@available(iOS 26.0, *)
+struct NativeNavComposeView: UIViewControllerRepresentable {
+    let topLevelRoute: TopLevelRoute
+    let coordinator: TabNavigationCoordinator
+    let appCoordinator: AppNavigationCoordinator
+
+    func makeUIViewController(context: Context) -> UIViewController {
+        MainViewControllerKt.MainViewController(
+            topLevelRoute: topLevelRoute,
+            onNavigate: { route in coordinator.push(route) },
+            onActivate: { route in appCoordinator.open(route: route) }
+        )
+    }
+
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
+}
+
+@available(iOS 26.0, *)
+struct DetailComposeView: UIViewControllerRepresentable {
+    let route: AppRoute
+    let coordinator: TabNavigationCoordinator
+    let appCoordinator: AppNavigationCoordinator
+
+    func makeUIViewController(context: Context) -> UIViewController {
+        MainViewControllerKt.ScreenViewController(
+            route: route,
+            onNavigate: { route in coordinator.push(route) },
+            onGoBack: { coordinator.pop() },
+            onSet: { route in appCoordinator.open(route: route) },
+            onActivate: { route in appCoordinator.open(route: route) }
+        )
+    }
+
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
+}
+
+// MARK: - View Helpers
+
+extension View {
+    @ViewBuilder
+    func `if`<Transform: View>(
+        _ condition: Bool,
+        transform: (Self) -> Transform
+    ) -> some View {
+        if condition {
+            transform(self)
+        } else {
+            self
+        }
+    }
+}
+
+// MARK: - Tab Content
+
 @available(iOS 26.0, *)
 struct TabContentView: View {
     let topLevelRoute: TopLevelRoute
@@ -193,9 +243,10 @@ struct TabContentView: View {
         guard let route = coordinator.path.last?.route else { return false }
         return shouldHideTabBar(for: route)
     }
+
     var isMenu: Bool {
         guard let route = coordinator.path.last?.route else { return false }
-        return shouMenu(for: route)
+        return shouldShowMenu(for: route)
     }
 
     var body: some View {
@@ -214,12 +265,25 @@ struct TabContentView: View {
             .navigationTitle(title)
             .navigationBarHidden(true)
             .navigationDestination(for: RouteWrapper.self) { wrapper in
+                let intercept = shouldInterceptBack(for: wrapper.route)
+
                 DetailComposeView(
                     route: wrapper.route,
                     coordinator: coordinator,
                     appCoordinator: appCoordinator
                 )
                 .toolbar {
+                    // Кнопка Back — своя только на экране с перехватом
+                    ToolbarItem(placement: .topBarLeading) {
+                        if intercept {
+                            Button {
+                                IosEventHandler().showDialog(isEvent: true)
+                            } label: {
+                                Image(systemName: "chevron.left")
+                                    .foregroundStyle(.primary)
+                            }
+                        }
+                    }
                     ToolbarItem(placement: .topBarTrailing) {
                         if isMenu {
                             Menu {
@@ -232,17 +296,27 @@ struct TabContentView: View {
                         }
                     }
                 }
+                // Скрываем системную кнопку Back только на нужном экране
+                .navigationBarBackButtonHidden(intercept)
                 .ignoresSafeArea(.all)
                 .navigationTitle(wrapper.route.title ?? "")
                 .toolbarTitleDisplayMode(.inline)
-
+                // Перехватываем свайп только на нужном экране
+                .if(intercept) { view in
+                    view.background(
+                        BackInterceptor {
+                            IosEventHandler().showDialog(isEvent:true)
+                        }
+                    )
+                }
             }
         }
         .toolbar(isTabBarHidden ? .hidden : .visible, for: .tabBar)
     }
 }
 
-/// Корневой экран приложения — TabView с тремя вкладками
+// MARK: - Root
+
 @available(iOS 26.0, *)
 struct NativeNavContentView: View {
     @State private var appCoordinator = AppNavigationCoordinator()
@@ -290,3 +364,4 @@ struct ContentView: View {
         }
     }
 }
+

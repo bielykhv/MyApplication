@@ -16,6 +16,10 @@ class DefaultTextComponent(profileTextStoreFactory: ProfileTextStoreFactory): Te
        store.accept(ProfileTextStore.Intent.ChangeText(text))
     }
 
+    override fun showDialog(isShow: Boolean) {
+        store.accept(ProfileTextStore.Intent.ShowDialog(isShow))
+    }
+
 //    class Factory(private val profileTextStoreFactory: ProfileTextStoreFactory): TextComponent.Factory{
 //        override fun invoke(): TextComponent {
 //            return DefaultTextComponent(profileTextStoreFactory = profileTextStoreFactory )

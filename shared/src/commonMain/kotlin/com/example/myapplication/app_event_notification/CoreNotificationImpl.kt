@@ -12,7 +12,15 @@ class CoreNotificationImpl : CoreNotification {
 
     override fun sendIosMenuEvent(isEvent: Boolean) {
         _storageFlow.tryEmit( NotificationData(
-            iosMenuEvent = isEvent
+            iosMenuEvent = isEvent,
+            showDialog = false
+        ))
+    }
+
+    override fun showExitDialogFromIos(isShow: Boolean) {
+        _storageFlow.tryEmit( NotificationData(
+            iosMenuEvent = false,
+            showDialog = isShow
         ))
     }
 }

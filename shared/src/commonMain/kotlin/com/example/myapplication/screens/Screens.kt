@@ -3,8 +3,10 @@ package com.example.myapplication.screens
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -16,6 +18,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.myapplication.MyViewModel
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.dsl.module
 
 @Composable
 fun HomeScreen(
@@ -161,6 +164,7 @@ fun ProfileDetailsNextTextScreen(
     val viewModel = koinViewModel<MyViewModel>()
     val state by viewModel.state.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
+
     LaunchedEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
@@ -177,6 +181,30 @@ fun ProfileDetailsNextTextScreen(
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
+    }
+    if ( state.openDialog){
+        AlertDialog(
+            onDismissRequest = { viewModel.hideDialog() },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.hideDialog()
+                        onBack()
+                    }
+                ) {
+                    Text("Да")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.hideDialog()
+                    }
+                ) {
+                    Text("Нет")
+                }
+            }
+        )
     }
 
     Box(modifier = Modifier.fillMaxSize()) {

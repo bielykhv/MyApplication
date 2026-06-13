@@ -21,6 +21,7 @@ class MyViewModel(private val coreNotification: CoreNotification,  val textCompo
                 if (it.iosMenuEvent) {
                     menuClick()
                 }
+                if(it.showDialog) textComponent.showDialog(true)
             }
         }
     }
@@ -33,6 +34,11 @@ class MyViewModel(private val coreNotification: CoreNotification,  val textCompo
     fun reset(){
         textComponent.changeText("текст сброшен")
         coreNotification.sendIosMenuEvent(false)
+    }
+
+
+    fun hideDialog(){
+        textComponent.showDialog(false)
     }
     fun resetWhenScreenResumes(){
         textComponent.changeText("экран resumes")
