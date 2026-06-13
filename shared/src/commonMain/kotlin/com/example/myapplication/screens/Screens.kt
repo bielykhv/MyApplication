@@ -18,7 +18,6 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.myapplication.MyViewModel
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.dsl.module
 
 @Composable
 fun HomeScreen(

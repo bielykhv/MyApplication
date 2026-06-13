@@ -56,7 +56,7 @@ interface ProfileTextStore : Store<Intent, State, Label> {
         override fun executeIntent(intent: Intent) {
             when(intent){
                 is Intent.ChangeText -> dispatch(ChangeText(intent.text))
-                is Intent.ShowDialog -> dispatch(Msg.MsgShowDialog(intent.isShow))
+                is Intent.ShowDialog -> dispatch(MsgShowDialog(intent.isShow))
             }
         }
 
