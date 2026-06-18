@@ -99,58 +99,6 @@ class AppNavigationCoordinator {
 
 // MARK: - Back Interceptor (только свайп)
 
-private extension UIView {
-    func findNavigationController() -> UINavigationController? {
-        sequence(first: self as UIResponder, next: \.next)
-            .compactMap { $0 as? UIViewController }
-            .compactMap { $0.navigationController }
-            .first
-    }
-}
-
-private struct BackInterceptor: UIViewRepresentable {
-    let onBack: () -> Void
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(onBack: onBack)
-    }
-
-    func makeUIView(context: Context) -> UIView {
-        let view = UIView()
-        view.backgroundColor = .clear
-        return view
-    }
-
-    func updateUIView(_ uiView: UIView, context: Context) {
-        context.coordinator.onBack = onBack
-        DispatchQueue.main.async {
-            if let nav = uiView.findNavigationController() {
-                context.coordinator.attach(to: nav)
-            }
-        }
-    }
-
-    final class Coordinator: NSObject, UIGestureRecognizerDelegate {
-        var onBack: () -> Void
-        weak var nav: UINavigationController?
-
-        init(onBack: @escaping () -> Void) {
-            self.onBack = onBack
-        }
-
-        func attach(to nav: UINavigationController) {
-            guard self.nav == nil else { return }
-            self.nav = nav
-            nav.interactivePopGestureRecognizer?.delegate = self
-        }
-
-        // Свайп не начинается — вместо этого вызываем onBack
-        func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-            onBack()
-            return false
-        }
-    }
-}
 
 // MARK: - Tab Bar / Menu Helpers
 
@@ -215,20 +163,6 @@ struct DetailComposeView: UIViewControllerRepresentable {
 }
 
 // MARK: - View Helpers
-
-extension View {
-    @ViewBuilder
-    func `if`<Transform: View>(
-        _ condition: Bool,
-        transform: (Self) -> Transform
-    ) -> some View {
-        if condition {
-            transform(self)
-        } else {
-            self
-        }
-    }
-}
 
 // MARK: - Tab Content
 
@@ -301,14 +235,6 @@ struct TabContentView: View {
                 .ignoresSafeArea(.all)
                 .navigationTitle(wrapper.route.title ?? "")
                 .toolbarTitleDisplayMode(.inline)
-                // Перехватываем свайп только на нужном экране
-                .if(intercept) { view in
-                    view.background(
-                        BackInterceptor {
-                            IosEventHandler().showDialog(isEvent:true)
-                        }
-                    )
-                }
             }
         }
         .toolbar(isTabBarHidden ? .hidden : .visible, for: .tabBar)

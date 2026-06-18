@@ -21,6 +21,7 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.compositionLocalOf
@@ -30,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSerializable
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,11 +58,14 @@ fun App(
     onNavigate: ((AppRoute) -> Unit)? = null,
     onActivate: ((TopLevelRoute) -> Unit)? = null,
 ) {
-    val startRoute: AppRoute = remember {
-        if (true) topLevelRoute else ProfileDetails()
+    CompositionLocalProvider(
+        localUseNativeNavigation provides true
+    ) {
+        val startRoute: AppRoute = remember { topLevelRoute }
+        NavHost(startRoute = startRoute, onActivate = onActivate, onNavigate = onNavigate)
     }
-    NavHost(startRoute = startRoute, onActivate = onActivate, onNavigate = onNavigate)
 }
+val localUseNativeNavigation = staticCompositionLocalOf { false }
 
 @Composable
 internal fun NavHost(
@@ -77,7 +82,8 @@ internal fun NavHost(
         ),
         primaryTopLevelRoute = Home,
     )
-    val topLevelBackEnabled = true
+    val topLevelBackEnabled = remember { false }
+    println(topLevelBackEnabled)
     val navigator = remember(navState, topLevelBackEnabled) {
         Navigator(navState, topLevelBackEnabled)
     }
@@ -108,22 +114,28 @@ internal fun NavHost(
             onBack = { navigator.goBack() },
         )
     }
+    val useNativeNavigation = remember { true }
 
-    val content = @Composable {
-        NavDisplay(
-            entries = navState.toDecoratedEntries(entryProvider),
-            onBack = { navigator.goBack() },
-        )
+    CompositionLocalProvider(localUseNativeNavigation provides useNativeNavigation) {
+        Box() {
+            val content = @Composable {
+                NavDisplay(
+                    entries = navState.toDecoratedEntries(entryProvider),
+                    onBack = { navigator.goBack() },
+                )
+            }
+            if (useNativeNavigation) {
+                content()
+            } else {
+                NavScaffold(
+                    navState = navState,
+                    navigator = navigator,
+                    content = content,
+                )
+            }
+        }
     }
-    if (isNative){
-        content()
-    }else{
-        NavScaffold(
-            navState = navState,
-            navigator = navigator,
-            content = content,
-        )
-    }
+
 }
 
 
