@@ -114,7 +114,7 @@ internal fun NavHost(
             onBack = { navigator.goBack() },
         )
     }
-    val useNativeNavigation = remember { true }
+    val useNativeNavigation = onNavigate != null
 
     CompositionLocalProvider(localUseNativeNavigation provides useNativeNavigation) {
         Box() {
