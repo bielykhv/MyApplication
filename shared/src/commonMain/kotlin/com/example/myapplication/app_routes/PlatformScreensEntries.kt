@@ -1,12 +1,7 @@
 package com.example.myapplication.app_routes
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.EntryProviderScope
-import com.example.myapplication.localUseNativeNavigation
 import com.example.myapplication.screens.HomeDetailsScreen
 import com.example.myapplication.screens.HomeScreen
 import com.example.myapplication.screens.ProfileDetailsNextScreen
@@ -84,25 +79,15 @@ fun SingleScreenApp(
     onSet: (AppRoute) -> Unit,
     onActivate: (TopLevelRoute) -> Unit
 ) {
-//    val localUseNativeNavigation = staticCompositionLocalOf { false }
-    CompositionLocalProvider(
-        localUseNativeNavigation provides true)
-    {
-        Box(
-            Modifier
-                .fillMaxSize()
-        ) {
-            ScreenContent(
-                route = route,
-                onNavigate = onNavigate,
-                onBack = onGoBack,
-                onSet = onSet,
-                onActivate = onActivate
-
-            )
-        }
-    }
+    ScreenContent(
+        route = route,
+        onNavigate = onNavigate,
+        onBack = onGoBack,
+        onSet = onSet,
+        onActivate = onActivate
+    )
 }
+
 
 @Composable
 internal fun ScreenContent(

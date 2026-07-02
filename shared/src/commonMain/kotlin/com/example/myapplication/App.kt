@@ -21,17 +21,14 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSerializable
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,7 +53,6 @@ import com.example.myapplication.app_routes.Search
 import com.example.myapplication.app_routes.TopLevelRoute
 import com.example.myapplication.app_routes.bottomNavDestinations
 import com.example.myapplication.app_routes.screens
-import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
@@ -67,14 +63,10 @@ fun App(
     onNavigate: ((AppRoute) -> Unit)? = null,
     onActivate: ((TopLevelRoute) -> Unit)? = null,
 ) {
-    CompositionLocalProvider(
-        localUseNativeNavigation provides true
-    ) {
-        val startRoute: AppRoute = remember { topLevelRoute }
-        NavHost(startRoute = startRoute, onActivate = onActivate, onNavigate = onNavigate)
-    }
+    val startRoute: AppRoute = remember { topLevelRoute }
+    NavHost(startRoute = startRoute, onActivate = onActivate, onNavigate = onNavigate)
+
 }
-val localUseNativeNavigation = staticCompositionLocalOf { false }
 
 @Composable
 internal fun NavHost(
@@ -124,8 +116,7 @@ internal fun NavHost(
     }
     val useNativeNavigation = onNavigate != null
 
-    CompositionLocalProvider(localUseNativeNavigation provides useNativeNavigation) {
-        Box() {
+
             val content = @Composable {
                 NavDisplay(
                     entries = navState.toDecoratedEntries(entryProvider),
@@ -141,12 +132,7 @@ internal fun NavHost(
                     content = content,
                 )
             }
-        }
-    }
-
 }
-
-
 
 
 @Composable
@@ -203,6 +189,7 @@ private fun BottomNavigation(
         )
     }
 }
+
 @Composable
 fun <T : Any> MainNavigationBar(
     currentDestination: MainNavDestination<T>?,
@@ -229,6 +216,7 @@ fun <T : Any> MainNavigationBar(
         }
     }
 }
+
 @Composable
 private fun MainNavigationButton(
     iconResource: DrawableResource,
@@ -238,15 +226,16 @@ private fun MainNavigationButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column (modifier = modifier.selectable(
-        selected = selected,
-        enabled = true,
-        role = Role.Tab,
-        onClick = onClick,
+    Column(
+        modifier = modifier.selectable(
+            selected = selected,
+            enabled = true,
+            role = Role.Tab,
+            onClick = onClick,
 
-    )
-        .background(if (selected) MaterialTheme.colorScheme.errorContainer else Color.Transparent),
-    ){
+            )
+            .background(if (selected) MaterialTheme.colorScheme.errorContainer else Color.Transparent),
+    ) {
         Image(
             modifier = modifier.padding(1.dp).size(28.dp),
             painter = painterResource(if (selected) iconFilledResource else iconResource),
@@ -256,7 +245,6 @@ private fun MainNavigationButton(
     }
 
 }
-
 
 
 @Composable
@@ -375,14 +363,4 @@ class NavState(
             }
         }.toMutableStateList()
     }
-}
-
-
-@Serializable
-data class Flags(
-    val enableBackOnTopLevelScreens: Boolean = true
-)
-
-val LocalFlags = compositionLocalOf<Flags> {
-    error("LocalFlags must be part of the call hierarchy to provide configuration")
 }
