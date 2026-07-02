@@ -136,7 +136,6 @@ fun ProfileDetailsNextScreen(
 
 
     Box(modifier = Modifier.fillMaxSize()) {
-        println(viewModel)
         Column(modifier = Modifier.align(Alignment.Center)) {
             if (state.text.isNotEmpty()){
                 Text(state.text)

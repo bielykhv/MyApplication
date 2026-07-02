@@ -1,9 +1,13 @@
-package com.example.myapplication
+package di
 
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
+import com.example.myapplication.MyViewModel
 import com.example.myapplication.app_event_notification.CoreNotification
 import com.example.myapplication.app_event_notification.CoreNotificationImpl
+import com.example.myapplication.integration.DefaultTextComponent
+import com.example.myapplication.integration.ProfileTextStoreFactory
+import com.example.myapplication.integration.TextComponent
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel

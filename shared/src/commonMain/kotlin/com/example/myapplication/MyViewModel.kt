@@ -3,6 +3,8 @@ package com.example.myapplication
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.app_event_notification.CoreNotification
+import com.example.myapplication.integration.ProfileTextStore
+import com.example.myapplication.integration.TextComponent
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
@@ -15,7 +17,6 @@ class MyViewModel(private val coreNotification: CoreNotification,  val textCompo
 
 
     init {
-        println("$this")
         viewModelScope.launch {
             coreNotification.storageFlow.collect {
                 if (it.iosMenuEvent) {
@@ -43,11 +44,6 @@ class MyViewModel(private val coreNotification: CoreNotification,  val textCompo
     fun resetWhenScreenResumes(){
         textComponent.changeText("экран resumes")
         coreNotification.sendIosMenuEvent(false)
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        println("on cleared")
     }
 
 }

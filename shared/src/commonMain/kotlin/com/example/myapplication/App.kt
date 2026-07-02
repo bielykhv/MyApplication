@@ -47,6 +47,15 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.compose.serialization.serializers.MutableStateSerializer
 import androidx.savedstate.compose.serialization.serializers.SnapshotStateListSerializer
+import com.example.myapplication.app_routes.AppRoute
+import com.example.myapplication.app_routes.Home
+import com.example.myapplication.app_routes.MainNavDestination
+import com.example.myapplication.app_routes.Navigator
+import com.example.myapplication.app_routes.Profile
+import com.example.myapplication.app_routes.Search
+import com.example.myapplication.app_routes.TopLevelRoute
+import com.example.myapplication.app_routes.bottomNavDestinations
+import com.example.myapplication.app_routes.screens
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -82,8 +91,7 @@ internal fun NavHost(
         ),
         primaryTopLevelRoute = Home,
     )
-    val topLevelBackEnabled = remember { false }
-    println(topLevelBackEnabled)
+    val topLevelBackEnabled = remember { true }
     val navigator = remember(navState, topLevelBackEnabled) {
         Navigator(navState, topLevelBackEnabled)
     }
@@ -121,7 +129,7 @@ internal fun NavHost(
             val content = @Composable {
                 NavDisplay(
                     entries = navState.toDecoratedEntries(entryProvider),
-                    onBack = { navigator.goBack() },
+                    onBack = { navigator.goBack() }
                 )
             }
             if (useNativeNavigation) {
@@ -357,13 +365,14 @@ class NavState(
             entryDecorators = decorators,
             entryProvider = entryProvider,
         )
-
         return when (val topRoute = topLevelRoute) {
             null -> defaultEntries
             primaryTopLevelRoute -> topLevelEntries.getValue(primaryTopLevelRoute)
-            else -> topLevelEntries.getValue(primaryTopLevelRoute) + topLevelEntries.getValue(
-                topRoute
-            )
+            else -> {
+                val current = topLevelEntries.getValue(topRoute)
+                if (isNative) current
+                else topLevelEntries.getValue(primaryTopLevelRoute) + current
+            }
         }.toMutableStateList()
     }
 }

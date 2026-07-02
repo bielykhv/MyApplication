@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.integration
 
 import kotlinx.coroutines.flow.StateFlow
 
@@ -9,7 +9,4 @@ interface TextComponent {
     fun changeText(text: String)
 
     fun showDialog(isShow: Boolean)
-//    fun interface Factory {
-//        operator fun invoke(): TextComponent
-//    }
 }

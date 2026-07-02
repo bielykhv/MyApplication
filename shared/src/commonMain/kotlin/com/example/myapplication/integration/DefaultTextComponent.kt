@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.integration
 
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,11 +19,4 @@ class DefaultTextComponent(profileTextStoreFactory: ProfileTextStoreFactory): Te
     override fun showDialog(isShow: Boolean) {
         store.accept(ProfileTextStore.Intent.ShowDialog(isShow))
     }
-
-//    class Factory(private val profileTextStoreFactory: ProfileTextStoreFactory): TextComponent.Factory{
-//        override fun invoke(): TextComponent {
-//            return DefaultTextComponent(profileTextStoreFactory = profileTextStoreFactory )
-//        }
-//
-//    }
 }

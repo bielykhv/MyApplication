@@ -1,12 +1,12 @@
-package com.example.myapplication
+package com.example.myapplication.app_routes
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.EntryProviderScope
+import com.example.myapplication.localUseNativeNavigation
 import com.example.myapplication.screens.HomeDetailsScreen
 import com.example.myapplication.screens.HomeScreen
 import com.example.myapplication.screens.ProfileDetailsNextScreen
@@ -33,7 +33,7 @@ fun EntryProviderScope<AppRoute>.screens(
     entry<Search> {
         SearchScreen(
             openDetails = {
-                navigator.add(SearchDetails() )
+                navigator.add(SearchDetails())
             }
         )
     }
@@ -75,7 +75,6 @@ fun EntryProviderScope<AppRoute>.screens(
     }
 }
 
-expect val isNative: Boolean
 
 @Composable
 fun SingleScreenApp(
@@ -113,7 +112,6 @@ internal fun ScreenContent(
     onSet: (AppRoute) -> Unit = {},
     onActivate: (TopLevelRoute) -> Unit,
 ) {
-
     when (route) {
         Home -> {
             HomeScreen(openDetails = { onNavigate(HomeDetails()) })

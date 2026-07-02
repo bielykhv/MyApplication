@@ -1,14 +1,14 @@
-package com.example.myapplication
+package com.example.myapplication.integration
 
 import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineBootstrapper
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
-import com.example.myapplication.ProfileTextStore.Intent
-import com.example.myapplication.ProfileTextStore.Label
-import com.example.myapplication.ProfileTextStore.State
-import com.example.myapplication.ProfileTextStoreFactory.Msg.*
+import com.example.myapplication.integration.ProfileTextStore.Intent
+import com.example.myapplication.integration.ProfileTextStore.Label
+import com.example.myapplication.integration.ProfileTextStore.State
+import com.example.myapplication.integration.ProfileTextStoreFactory.Msg.*
 
 interface ProfileTextStore : Store<Intent, State, Label> {
 

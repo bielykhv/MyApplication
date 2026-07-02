@@ -1,13 +1,10 @@
+package com.example.myapplication.app_routes
 
-package com.example.myapplication
-
+import com.example.myapplication.NavState
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.filter
-import kotlin.compareTo
-import kotlin.text.clear
-import kotlin.text.removeRange
 
 class Navigator(
     val state: NavState,
@@ -72,7 +69,7 @@ class Navigator(
     }
 
     // -------------------------
-    // 🔥 CROSS TAB NAVIGATION (MAIN FIX)
+    // 🔥 CROSS TAB NAVIGATION
     // -------------------------
     fun crossTab(target: AppRoute) {
         val targetTab = target.toTopLevel()

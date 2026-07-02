@@ -7,8 +7,6 @@ interface CoreNotification{
 
 
     fun sendIosMenuEvent(isEvent: Boolean)
-    //    fun saveLocale(type: LocaleType)
-    //ненужные методы потом почистим
     fun showExitDialogFromIos(isShow: Boolean)
 }
 

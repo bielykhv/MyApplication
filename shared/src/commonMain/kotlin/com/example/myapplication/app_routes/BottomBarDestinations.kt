@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.app_routes
 
 import myapplication.shared.generated.resources.Res
 import myapplication.shared.generated.resources.compose_multiplatform
