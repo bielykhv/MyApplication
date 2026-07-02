@@ -1,6 +1,6 @@
 package com.example.myapplication
 
-import di.mainModule
+import com.example.myapplication.di.mainModule
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 

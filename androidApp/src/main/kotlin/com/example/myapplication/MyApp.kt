@@ -1,7 +1,7 @@
 package com.example.myapplication
 
 import android.app.Application
-import di.initKoin
+import com.example.myapplication.di.initKoin
 import org.koin.android.ext.koin.androidContext
 
 class MyApp: Application() {

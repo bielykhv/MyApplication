@@ -1,4 +1,4 @@
-package di
+package com.example.myapplication.di
 
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
