@@ -1,3 +1,6 @@
 package com.example.myapplication
 
-actual val isNative: Boolean = true
+import platform.UIKit.UIDevice
+
+actual val isNative: Boolean = (UIDevice.currentDevice.systemVersion
+        .substringBefore(".").toIntOrNull() ?: 0) >= 26
